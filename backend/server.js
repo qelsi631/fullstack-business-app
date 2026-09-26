@@ -77,6 +77,18 @@ app.post("/api/products", async (req, res) => {
   try {
     const { name, price } = req.body;
 
+    if (!name || !name.trim()) {
+      return res.status(400).json({
+        error: "Product name is required",
+      });
+    }
+
+    if (price === undefined || price === null || Number(price) <= 0) {
+      return res.status(400).json({
+        error: "Price must be greater than 0",
+      });
+    }
+
     const result = await pool.query(
       "INSERT INTO products (name, price) VALUES ($1, $2) RETURNING *",
       [name, price]
@@ -84,11 +96,7 @@ app.post("/api/products", async (req, res) => {
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error("DATABASE ERROR:", error);
-
-    res.status(500).json({
-      error: "Database error",
-    });
+    // ...
   }
 });
 
@@ -104,6 +112,18 @@ app.put("/api/products/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { name, price } = req.body;
+
+    if (!name || !name.trim()) {
+  return res.status(400).json({
+    error: "Product name is required",
+  });
+}
+
+if (price === undefined || price === null || Number(price) <= 0) {
+  return res.status(400).json({
+    error: "Price must be greater than 0",
+  });
+}
 
     const result = await pool.query(
       "UPDATE products SET name = $1, price = $2 WHERE id = $3 RETURNING *",
